@@ -1,4 +1,4 @@
-:production: &defaults
+:production: &db_prod
   :db_default: &database
     :adapter: postgres
     :host: localhost
@@ -9,9 +9,8 @@
     <<: *database
     :user: latoto_password
 
-
 :development:
-  <<: *defaults
+  <<: *db_prod
   :db_default: &db_dev
     <<: *database
     :user: latoto_dev
@@ -20,7 +19,7 @@
     <<: *db_dev
     :user: latoto_dev_password
 :test:
-  <<: *defaults
+  <<: *db_prod
   :db_default: &db_test
     <<: *database
     :user: latoto_test

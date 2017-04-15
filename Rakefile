@@ -1,5 +1,7 @@
 require 'yaml'
 require 'pry'
+require 'sequel'
+require 'logger'
 
 SETTINGS = YAML.load_file('./settings/database.yml')
 
@@ -33,22 +35,16 @@ unset_postgres = lambda do |env|
 end
 
 migrate = lambda do |env, version|
-  ENV['RACK_ENV'] = env
-  require 'sequel'
-  require 'logger'
   Sequel.extension :migration
-  Sequel.postgres(SETTINGS[env.to_sym][:db_default]) do |db|
+  Sequel.connect(SETTINGS[env.to_sym][:db_default]) do |db|
     db.loggers << Logger.new($stdout)
     Sequel::Migrator.run(db, './migrate', target: version)
   end
 end
 
 migrate_sensitive = lambda do |env, version|
-  ENV['RACK_ENV'] = env
-  require 'sequel'
-  require 'logger'
   Sequel.extension :migration
-  Sequel.postgres(SETTINGS[env.to_sym][:db_sensitive]) do |db|
+  Sequel.connect(SETTINGS[env.to_sym][:db_sensitive]) do |db|
     db.loggers << Logger.new($stdout)
     Sequel::Migrator.run(db, './migrate/migrate_password', table: 'schema_info_password', target: version)
   end
@@ -90,83 +86,8 @@ namespace :db do
     version = args[:version] ? args[:version].to_i : nil
     migrate_sensitive.call(args[:env], version)
   end
-  # desc 'Setup database PostgreSQL'
-  # task :setup_postgres do
-  #   sh 'psql -U postgres -c "CREATE USER latoto PASSWORD \'latoto\'"'
-  #   sh 'psql -U postgres -c "CREATE USER latoto_password PASSWORD \'latoto\'"'
-  #   sh 'createdb -U postgres -O latoto latoto'
-  #
-  #   sh 'psql -U postgres -c "CREATE EXTENSION citext" latoto'
-  #
-  #   # $: << 'lib'
-  #   # require 'sequel'
-  #   # Sequel.extension :migration
-  #   # Sequel.postgres(:user=>'latoto', :password=>'latoto') do |db|
-  #   #   Sequel::Migrator.run(db, './migrate')
-  #   # end
-  #   # Sequel.postgres('latoto', :user=>'latoto_password', :password=>'latoto') do |db|
-  #   #   Sequel::Migrator.run(db, './migrate/migrate_password', :table=>'schema_info_password')
-  #   # end
-  # end
-  #
-  # desc 'Teardown database PostgreSQL'
-  # task :teardown_postgres do
-  #   sh 'dropdb -U postgres latoto'
-  #   sh 'dropuser -U postgres latoto'
-  #   sh 'dropuser -U postgres latoto_password'
-  # end
-  #
-  # desc "Migrate test database to latest version"
-  # task :test_up do
-  #   migrate.call('test', nil)
-  # end
-  #
-  # desc "Migrate test database all the way down"
-  # task :test_down do
-  #   migrate.call('test', 0)
-  # end
-  #
-  # desc "Migrate test database all the way down and then back up"
-  # task :test_bounce do
-  #   migrate.call('test', 0)
-  #   Sequel::Migrator.apply(DB, 'latoto')
-  # end
-  #
-  # desc "Migrate development database to latest version"
-  # task :dev_up do
-  #   migrate.call('development', nil)
-  # end
-  #
-  # desc "Migrate development database to all the way down"
-  # task :dev_down do
-  #   migrate.call('development', 0)
-  # end
-  #
-  # desc "Migrate development database all the way down and then back up"
-  # task :dev_bounce do
-  #   migrate.call('development', 0)
-  #   Sequel::Migrator.apply(DB, 'latoto')
-  # end
-  #
-  # desc "Migrate production database to latest version"
-  # task :prod_up do
-  #   migrate.call('production', nil)
-  # end
 end
 
-# Shell
-
-irb = proc do |env|
-  ENV['RACK_ENV'] = env
-  trap('INT', "IGNORE")
-  dir, base = File.split(FileUtils::RUBY)
-  cmd = if base.sub!(/\Aruby/, 'irb')
-    File.join(dir, base)
-  else
-    "#{FileUtils::RUBY} -S irb"
-  end
-  sh "#{cmd} -r ./models"
-end
 
 # Shell
 pry = proc do |env|
@@ -183,22 +104,6 @@ namespace :shell do
     else
       puts('Wrong env param')
     end
-  end
-
-
-  desc "Open irb shell in test mode"
-  task :test_irb do
-    irb.call('test')
-  end
-
-  desc "Open irb shell in development mode"
-  task :dev_irb do
-    irb.call('development')
-  end
-
-  desc "Open irb shell in production mode"
-  task :prod_irb do
-    irb.call('production')
   end
 end
 

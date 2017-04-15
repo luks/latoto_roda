@@ -1,10 +1,11 @@
 require_relative '.env.rb'
 
 require 'sequel'
+require 'yaml'
 
-# Delete DATABASE_URL from the environment, so it isn't accidently
-# passed to subprocesses.  DATABASE_URL may contain passwords.
-DB = Sequel.connect(ENV.delete('DATABASE_URL'))
+DB_SETTINGS = YAML.load_file('settings/database.yml')
+database = DB_SETTINGS[ENV['RACK_ENV'].to_sym][:db_default]
+DB = Sequel.connect(database)
 DB.extension :freeze_datasets
 DB.extension :date_arithmetic
 

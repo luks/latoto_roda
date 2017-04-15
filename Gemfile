@@ -7,8 +7,10 @@ gem 'roda'
 gem 'sequel'
 gem 'sequel_pg'
 gem 'rack-unreloader'
+gem 'pry'
 
 gem 'capybara'
 gem 'minitest', '>= 5.7.0'
 gem 'minitest-hooks', '>= 1.1.0'
 gem 'rodauth'
+
