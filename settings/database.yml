@@ -1,0 +1,31 @@
+:production: &defaults
+  :db_default: &database
+    :adapter: postgres
+    :host: localhost
+    :database: latoto
+    :user: latoto
+    :password: latoto
+  :db_sensitive:
+    <<: *database
+    :user: latoto_password
+
+
+:development:
+  <<: *defaults
+  :db_default: &db_dev
+    <<: *database
+    :user: latoto_dev
+    :database: latoto_dev
+  :db_sensitive:
+    <<: *db_dev
+    :user: latoto_dev_password
+:test:
+  <<: *defaults
+  :db_default: &db_test
+    <<: *database
+    :user: latoto_test
+    :database: latoto_test
+  :db_sensitive:
+    <<: *db_test
+    :user: latoto_dev_password
+    :user: latoto_test_password

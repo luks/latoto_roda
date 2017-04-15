@@ -156,6 +156,6 @@ Sequel.migration do
                :account_verification_keys,
                :account_password_reset_keys,
                :accounts,
-               :account_statuses)
+               :account_statuses, cascade: true, if_exists: true)
   end
 end
