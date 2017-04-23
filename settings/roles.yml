@@ -1,0 +1,29 @@
+
+
+luka can see all posts
+luka can edit own posts
+luka can see price in own posts
+luka can see price in ivo posts
+luka can't edit price in ivo posts
+ivo can edit price in luka posts
+zvone can't see luka posts
+zvone can see ivo posts
+
+
+crud -
+
+1 1  create  POST
+2 2  retrive GET
+3 4  update  PUT
+4 8  delete  DELETE
+
+
+
+
+role: user
+
+permission:
+ - user|post|15
+ - user|comments|8
+ - user|bank_account|34
+
