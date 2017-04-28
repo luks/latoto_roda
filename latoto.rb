@@ -1,5 +1,5 @@
 require_relative 'models'
-
+#require_relative 'routes/roles'
 require 'roda'
 require 'mail'
 require 'securerandom'
@@ -27,6 +27,7 @@ module Latoto
     use Rack::Session::Cookie, :secret=>secret, :key => '_latoto_session'
     plugin :render, :escape=>:erubi, :check_paths=>true
     plugin :hooks
+    plugin :multi_route
 
     plugin :csrf, :skip_if => lambda{|req| req.env['CONTENT_TYPE'] =~ /application\/json/}
     plugin :rodauth, :json=>true do
@@ -64,6 +65,39 @@ module Latoto
       Mail::TestMailer.deliveries.clear
     end
 
+    plugin :autoforme
+
+    Forme.register_config(:mine, :base=>:default, :labeler=>:explicit, :wrapper=>:div)
+    Forme.default_config = :mine
+    require 'forme/bs3'
+
+
+    def self.setup_autoforme(name, &block)
+      autoforme(:name=>name) do
+        form_options :input_defaults=>{'text'=>{:size=>50}, 'checkbox'=>{:label_position=>:before}}
+        def self.model(mod, &b)
+          super(mod) do
+            class_display_name mod.name.sub('Latoto::', '')
+            instance_exec(&b) if b
+          end
+        end
+        instance_exec(&block)
+      end
+    end
+
+    setup_autoforme(:bootstrap3) do
+      form_options(:config=>:bs3)
+      mtm_associations :all
+      model Account
+      model Role
+      model RolePermission
+      model RolePower
+      model RoleResource
+      model RoleResourceType
+      model RoleMember
+      model Account
+    end
+
     route do |r|
       rodauth.load_memory
       rodauth.check_session_expiration
@@ -75,6 +109,9 @@ module Latoto
 
       r.root do
         view 'index'
+      end
+      r.on 'admin' do
+        autoforme(:bootstrap3)
       end
 
       r.post "single-session" do

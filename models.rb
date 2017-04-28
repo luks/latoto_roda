@@ -8,6 +8,15 @@ Sequel::Model.plugin :auto_validations
 Sequel::Model.plugin :prepared_statements
 Sequel::Model.plugin :subclasses unless ENV['RACK_ENV'] == 'development'
 
+# forme test
+Sequel::Model.plugin :defaults_setter
+Sequel::Model.plugin :validation_helpers
+Sequel::Model.plugin :forme
+Sequel::Model.plugin :association_pks
+Sequel::Model.plugin :prepared_statements
+Sequel::Model.plugin :subclasses
+# /forme test
+
 unless defined?(Unreloader)
   require 'rack/unreloader'
   Unreloader = Rack::Unreloader.new(:reload=>false)
