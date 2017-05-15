@@ -1,0 +1,22 @@
+
+<div class="col-md-6">
+    <div class="card mx-4">
+        <div class="card-block p-4">
+            <h1>Register</h1>
+            <p class="text-muted">Create your account</p>
+            <form method="post" class="rodauth form-horizontal" role="form" id="create-account-form">
+                #{rodauth.create_account_additional_form_tags}
+                #{rodauth.csrf_tag}
+                #{rodauth.render('login-field')}
+                #{rodauth.render('login-confirm-field') if rodauth.require_login_confirmation?}
+                #{rodauth.render('password-field')}
+                #{rodauth.render('password-confirm-field') if rodauth.require_password_confirmation?}
+
+                <button type="submit" class="btn btn-block btn-success">Create Account</button>
+
+
+            </form>
+        </div>
+    </div>
+</div>
+

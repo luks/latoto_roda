@@ -25,10 +25,11 @@ module Latoto
 
     secret = ENV['RODAUTH_SESSION_SECRET'] || ENV['SESSION_SECRET'] || SecureRandom.random_bytes(30)
     use Rack::Session::Cookie, :secret=>secret, :key => '_latoto_session'
-    plugin :render, :escape=>:erubi, :check_paths=>true
+    plugin :render, :escape=>:erubi, :check_paths=>true, :engine => 'slim'
     plugin :hooks
     plugin :multi_route
-
+    plugin :assets, YAML.load_file('settings/assets.yml')
+    plugin :static, %w[/img /assets/fonts]
     plugin :csrf, :skip_if => lambda{|req| req.env['CONTENT_TYPE'] =~ /application\/json/}
     plugin :rodauth, :json=>true do
       db DB
@@ -45,6 +46,9 @@ module Latoto
       only_json? false
       json_response_custom_error_status? true
       jwt_secret secret
+      template_opts(:layout_opts=>{:path=>'views/rodauth/layout.slim'})
+
+
       sms_send do |phone_number, message|
         MUTEX.synchronize{SMS[session_value] = "Would have sent the following SMS to #{phone_number}: #{message}"}
       end
@@ -99,6 +103,7 @@ module Latoto
     end
 
     route do |r|
+
       rodauth.load_memory
       rodauth.check_session_expiration
       rodauth.update_last_activity
@@ -106,11 +111,12 @@ module Latoto
         rodauth.check_single_session
       end
       r.rodauth
-
+      r.assets
       r.root do
         view 'index'
       end
       r.on 'admin' do
+        #rodauth.require_authentication
         autoforme(:bootstrap3)
       end
 
@@ -121,5 +127,12 @@ module Latoto
     end
 
     freeze
+  end
+end
+module Rodauth
+  module Base
+    def template_path(page)
+      File.join(File.dirname(__FILE__), 'views/rodauth/templates', "#{page}.str")
+    end
   end
 end

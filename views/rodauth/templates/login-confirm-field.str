@@ -1,0 +1,4 @@
+<div class="input-group mb-3">
+    <span class="input-group-addon"><i class="icon-user"></i></span>
+    <input placeholder="#{rodauth.login_confirm_label}" type="text" class="form-control" name="login-confirm" id="#{rodauth.login_confirm_param}" value="#{h request[rodauth.login_confirm_param]}"/>
+</div>

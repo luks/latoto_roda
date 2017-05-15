@@ -59,8 +59,6 @@ end
 
 # Migrate
 
-
-
 # Database
 
 namespace :db do

@@ -15,6 +15,7 @@ Sequel::Model.plugin :forme
 Sequel::Model.plugin :association_pks
 Sequel::Model.plugin :prepared_statements
 Sequel::Model.plugin :subclasses
+Sequel::Model.plugin :many_through_many
 # /forme test
 
 unless defined?(Unreloader)

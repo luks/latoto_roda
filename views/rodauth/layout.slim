@@ -1,0 +1,26 @@
+doctype html
+html lang="en"
+    head
+        meta content=("text/html; charset=UTF-8") http-equiv="Content-Type" /
+        meta charset="utf-8" /
+        meta content="IE=edge" http-equiv="X-UA-Compatible" /
+        meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" /
+        meta content=("CoreUI Bootstrap 4 Admin Template") name="description" /
+        meta content=("Lukasz Holeczek") name="author" /
+        meta content=("CoreUI Bootstrap 4 Admin Template") name="keyword" /
+        /! <link rel="shortcut icon" href="assets/ico/favicon.png"
+        title CoreUI Bootstrap 4 Admin Template
+        == assets(:css)
+    body.app.flex-row.align-items-center
+        .container
+            - if flash[:notice]
+                .alert.alert-success
+                    p= flash[:notice]
+            - if flash[:error]
+                .alert.alert-danger
+                    p= flash[:error]
+            div class="row justify-content-center"
+
+                == yield
+
+        == assets(:js)

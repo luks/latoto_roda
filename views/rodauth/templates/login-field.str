@@ -1,0 +1,6 @@
+<div class="text-danger">#{rodauth.field_error(rodauth.login_param)}</div>
+<div class="input-group mb-3" >
+    <span class="input-group-addon"><i class="icon-user"></i></span>
+    <input placeholder="#{rodauth.login_label}" type="text" class="form-control" name="#{rodauth.login_param}" id="login" value="#{h request[rodauth.login_param]}"/>
+</div>
+

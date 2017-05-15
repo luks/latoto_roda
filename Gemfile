@@ -16,3 +16,5 @@ gem 'rodauth'
 gem 'forme'
 gem 'autoforme'
 
+gem 'slim'
+
